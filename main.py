@@ -37,23 +37,27 @@ if __name__ == '__main__':
 	print "RBM Initialized"
 	numTrain = loader.getNumTrain()
 	numValid = loader.getNumVal()
-	numEpochs = 100
+	numEpochs = 150
+	K = 5
+	lr = 0.1
 	meanTrainLoss = np.zeros(numEpochs)
 	meanValLoss = np.zeros(numEpochs)
 	for epoch in range(numEpochs):
+		if epoch == numEpochs/2:
+			lr /= 10
 		start = time.time()
 		loader.shuffleTrain()
 		trainLoss = np.zeros(numTrain)
 		for i in range(numTrain):
 			img, label = loader.getTrainSample(i)
 			network.loadData(img)
-			trainLoss[i] = network.CD_K(K=1, lr=0.1, train=True)
+			trainLoss[i] = network.CD_K(K=K, lr=lr, train=True)
 		meanTrainLoss[epoch] = np.mean(trainLoss)
 		valLoss = np.zeros(numValid)
 		for i in range(numValid):
 			img, label = loader.getValSample(i)
 			network.loadData(img)
-			valLoss[i] = network.CD_K(K=1, train = False)
+			valLoss[i] = network.CD_K(K=K, train = False)
 		meanValLoss[epoch] = np.mean(valLoss)
 		end = time.time()
 		print 'Epoch: ', epoch, 'Train Loss:', ("%.4f" % meanTrainLoss[epoch]), 'Validation Loss: ',
